@@ -1,0 +1,71 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background: #35424a;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+    text-decoration:none;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+.border-content {
+    border: 1px solid black;
+    padding: 21px;
+}
+.color {
+    color: #2486db;
+}
+.div-container {
+    border: 2px solid #2486db;
+    border-radius: 11px;
+    height: 387px;
+    width: 424px;
+}
+.span-content {
+    font-size: 24px;
+    margin-left: 82%;
+    color: #2486db;
+}
+
+.text-content {
+    font-size: 15px;
+    color: #2486db;
+}
+.vertical-line {
+    border-left: 2px dashed #2486db;
+    height: 387px;
+    margin: 0 20px;
+    margin-left: 65px;
+}
+.modal .modal-dialog .modal-content .modal-body input {
+    border: 2px solid #2486db;
+}
