@@ -5,14 +5,20 @@ namespace ContactManagement.Controllers
 {
     public class CMSController : Controller
     {
-        public IActionResult DashBoard()
+        readonly CMS cms;
+        readonly ContactMaster.ContactMaster cMSMaster; 
+        public CMSController(CMS cMS, ContactMaster.ContactMaster cMSMaster)
         {
-            return View();
-        }
-        public IActionResult CMS()
-        {
-            return View();
+            this.cms = cMS;
+            this.cMSMaster = cMSMaster; 
         }
 
+        public IActionResult DashBoard() => View();
+        public IActionResult CMS() => View();
+        public async Task<IActionResult> CmsContent()
+        {
+            
+            return Content("Success");
+        }
     }
 }
