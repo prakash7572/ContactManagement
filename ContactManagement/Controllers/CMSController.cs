@@ -5,19 +5,20 @@ namespace ContactManagement.Controllers
 {
     public class CMSController : Controller
     {
-        readonly CMS cms;
-        readonly ContactMaster.ContactMaster cMSMaster; 
-        public CMSController(CMS cMS, ContactMaster.ContactMaster cMSMaster)
+
+        readonly IContactMaster _contactMaster;  
+        public CMSController(IContactMaster contact)
         {
-            this.cms = cMS;
-            this.cMSMaster = cMSMaster; 
+            this._contactMaster = contact;
         }
 
         public IActionResult DashBoard() => View();
         public IActionResult CMS() => View();
-        public async Task<IActionResult> CmsContent()
+
+        [HttpPost]
+        public async Task<IActionResult> CmsContent(CMS cms)
         {
-            
+            ContactMaster.CMS data = await _contactMaster.MergeAction(cms);
             return Content("Success");
         }
     }
