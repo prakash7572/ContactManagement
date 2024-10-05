@@ -16,10 +16,10 @@ namespace ContactManagement.Controllers
         public IActionResult CMS() => View();
 
         [HttpPost]
-        public async Task<IActionResult> CmsContent(CMS cms)
+        public async Task<IActionResult> CmsContact([FromForm] CMS cms)
         {
-            ContactMaster.CMS data = await _contactMaster.MergeAction(cms);
-            return Content("Success");
+            Response<CMS> data = await _contactMaster.MergeAction(cms);
+            return Content(data.ToString());
         }
     }
 }

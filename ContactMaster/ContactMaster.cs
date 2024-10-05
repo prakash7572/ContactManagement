@@ -2,18 +2,17 @@
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Xml.Linq;
 
 namespace ContactMaster
 {
     public class ContactMaster : IContactMaster
     {
-        readonly IContactMaster contactMaster;
         readonly string? _connectionString;
-        public ContactMaster(IContactMaster contactMaster, IConfiguration iContactMaster)
+        readonly DataTable _dataTable;
+        public ContactMaster(IConfiguration iContactMaster, DataTable dataTable)
         {
-            this.contactMaster = contactMaster;
-            _connectionString = iContactMaster.GetConnectionString("DefaultConnection");
+            this._connectionString = iContactMaster.GetConnectionString("DefaultConnection");
+            this._dataTable = dataTable;
         }
 
         public Task<CMS> Delete()
@@ -21,38 +20,30 @@ namespace ContactMaster
             throw new NotImplementedException();
         }
 
-        //public async Task<CMS> Fetch(int id = 0)
-        //{
-        //    using var conn = new SqlConnection(_connectionString);
-        //    using var cmd = new SqlCommand("SELECT * FROM CMS WHERE ID = @ID", conn);
-        //    cmd.Parameters.AddWithValue("@ID", id);
+        public async Task<Response<CMS>> Fetch(int id = 0)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("SP_ContactManagement", conn);
+            cmd.Parameters.AddWithValue("@ID", id);
+            cmd.Parameters.AddWithValue("@QueryType", id== 0 ? "FETCH_ALL" : "FETCH_ONE");
+            await conn.OpenAsync();
+            using var adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(_dataTable);
 
-        //    await conn.OpenAsync();
-        //    using var reader = await cmd.ExecuteReaderAsync();
+            if (_dataTable.Rows.Count > 0)
+            {
+                return new Response<CMS>(true, _dataTable, "Cms data fetch successfully!", 200);
+            }
+            return new Response<CMS>(false, null, "No data found!", 404);
+        }
 
-        //    if (await reader.ReadAsync())
-        //    {
-        //        return new CMS
-        //        {
-        //            ID = (int)reader["ID"],
-        //            UserName = (string)reader["UserName"],
-        //            Email = (string)reader["Email"],
-        //            Password = (string)reader["Password"],
-        //            FirstName = (string)reader["FirstName"],
-        //            LastName = (string)reader["LastName"],
-        //            Address = (string)reader["Address"]
-        //        };
-        //    }
 
-        //    return CMS; // Not found
-        //}
-
-        public async Task<Response<CMS>> MergeActionAsync(CMS cms)
+        public async Task<Response<CMS>> MergeAction(CMS cms)
         {
             try
             {
                 using var conn = new SqlConnection(_connectionString);
-                using var cmd = new SqlCommand("Prodcedue", conn)
+                using var cmd = new SqlCommand("SP_ContactManagement", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -68,8 +59,10 @@ namespace ContactMaster
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
+                using var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(_dataTable);
 
-                return new Response<CMS>(true, cms, "CMS merged successfully!", 200);
+                return new Response<CMS>(true, _dataTable, "CMS merged successfully!", 200);
             }
             catch (Exception ex)
             {

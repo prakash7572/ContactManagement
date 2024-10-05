@@ -1,8 +1,13 @@
+using ContactMaster;
+using System.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddTransient<IContactMaster,ContactMaster.ContactMaster>();
+builder.Services.AddTransient<DataTable>();
+builder.Services.AddTransient<CMS>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

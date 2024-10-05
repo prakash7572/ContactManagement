@@ -8,8 +8,8 @@ namespace ContactMaster
 {
     public interface IContactMaster
     {
-        Task<Response<CMS>> MergeActionAsync(CMS cms);    
-        Task<CMS> Fetch(int id=0);
+        Task<Response<CMS>> MergeAction(CMS cms);
+        Task<Response<CMS>> Fetch(int id = 0);
         Task<CMS> Delete();
     }
 }

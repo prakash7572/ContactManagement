@@ -54,4 +54,10 @@ BEGIN
 			  SELECT  ID,FirstName,LastName,UserName,Password,ConfirmPassword,Email,Address 
 			  FROM Contacts WHERE ID=@ID
 		END
+		ELSE IF(@QueryType='DELETE')
+		BEGIN
+			 DELETE FROM Contacts  WHERE ID=@ID
+		END
 END
+
+select * from Contacts
