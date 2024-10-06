@@ -1,5 +1,6 @@
 ﻿using ContactMaster;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ContactManagement.Controllers
 {
@@ -16,10 +17,16 @@ namespace ContactManagement.Controllers
         public IActionResult CMS() => View();
 
         [HttpPost]
-        public async Task<IActionResult> CmsContact([FromForm] CMS cms) 
+        public async Task<IActionResult> CmsContact([FromBody] CMS cms) 
         {
             Response<CMS> data = await _contactMaster.MergeAction(cms); 
-            return Content(data.ToString());
+            return Content(JsonConvert.SerializeObject(data));
+        }
+        [HttpGet]
+        public async Task<IActionResult> Fetch(int ID=0)
+        {
+            var data = await _contactMaster.Fetch(ID);
+            return Content(JsonConvert.SerializeObject(data));
         }
     }
 }

@@ -13,15 +13,15 @@ Address VARCHAR(MAX),
 )
 
 CREATE PROCEDURE SP_ContactManagement(
-@ID			      INT,
-@FirstName        VARCHAR(100),
-@LastName         VARCHAR(100),
-@UserName         VARCHAR(100),
-@Password         VARCHAR(100),
-@ConfirmPassword  VARCHAR(100),
-@Email            VARCHAR(100),
-@Address		  VARCHAR(MAX),
-@QueryType		  VARCHAR(20)
+@ID			      INT=0,
+@FirstName        VARCHAR(100)=NULL,
+@LastName         VARCHAR(100)=NULL,
+@UserName         VARCHAR(100)=NULL,
+@Password         VARCHAR(100)=NULL,
+@ConfirmPassword  VARCHAR(100)=NULL,
+@Email            VARCHAR(100)=NULL,
+@Address		  VARCHAR(MAX)=NULL,
+@QueryType		  VARCHAR(20)=NULL
 )
 AS
 BEGIN
@@ -34,7 +34,7 @@ BEGIN
 			 VALUES (@FirstName,@LastName,@UserName,@Password,@ConfirmPassword,@Email,@Address)
 
 			 SET @STATUS='SUCCESS';SET @MESSAGE='Data Insert Successfully !!';
-			 SELECT @STATUS,@MESSAGE
+			 SELECT @STATUS AS STATUS,@MESSAGE AS MESSAGE
 		END
 		ELSE IF(@QueryType='UPDATE')
 		BEGIN
@@ -42,21 +42,23 @@ BEGIN
 			 Password=@Password,ConfirmPassword=@ConfirmPassword,Email=@Email,Address=@Address
 
 			 SET @STATUS='SUCCESS';SET @MESSAGE='Data Update Successfully !!';
-			 SELECT @STATUS,@MESSAGE
+			 SELECT @STATUS AS STATUS,@MESSAGE AS MESSAGE
 		END
 		ELSE IF(@QueryType='FETCH_ONE')
 		BEGIN
 		     SELECT  ID,FirstName,LastName,UserName,Password,ConfirmPassword,Email,Address
-			 FROM Contacts
+			 FROM Contacts WHERE ID=@ID
 		END
 		ELSE IF(@QueryType='FETCH_ALL')
 		BEGIN
 			  SELECT  ID,FirstName,LastName,UserName,Password,ConfirmPassword,Email,Address 
-			  FROM Contacts WHERE ID=@ID
+			  FROM Contacts 
 		END
 		ELSE IF(@QueryType='DELETE')
 		BEGIN
 			 DELETE FROM Contacts  WHERE ID=@ID
+			  SET @STATUS='SUCCESS';SET @MESSAGE='Data Delete Successfully !!';
+			 SELECT @STATUS AS STATUS,@MESSAGE AS MESSAGE
 		END
 END
 

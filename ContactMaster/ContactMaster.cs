@@ -23,7 +23,10 @@ namespace ContactMaster
         public async Task<Response<CMS>> Fetch(int id = 0)
         {
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SP_ContactManagement", conn);
+            using var cmd = new SqlCommand("SP_ContactManagement", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
             cmd.Parameters.AddWithValue("@ID", id);
             cmd.Parameters.AddWithValue("@QueryType", id== 0 ? "FETCH_ALL" : "FETCH_ONE");
             await conn.OpenAsync();
@@ -32,7 +35,7 @@ namespace ContactMaster
 
             if (_dataTable.Rows.Count > 0)
             {
-                return new Response<CMS>(true, _dataTable, "Cms data fetch successfully!", 200);
+                return new Response<CMS>(true, _dataTable, "Data Fetch Successfully !!", 200);
             }
             return new Response<CMS>(false, null, "No data found!", 404);
         }
@@ -62,7 +65,7 @@ namespace ContactMaster
                 using var adapter = new SqlDataAdapter(cmd);
                 adapter.Fill(_dataTable);
 
-                return new Response<CMS>(true, _dataTable, "CMS merged successfully!", 200);
+                return new Response<CMS>(true, _dataTable,"", 200);
             }
             catch (Exception ex)
             {
