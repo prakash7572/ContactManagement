@@ -16,7 +16,7 @@ namespace ContactManagement.Controllers
         public IActionResult CMS() => View();
 
         [HttpPost]
-        public async Task<IActionResult> CmsContact([FromForm] CMS cms)
+        public async Task<IActionResult> CmsContact([FromForm] CMS cms) 
         {
             Response<CMS> data = await _contactMaster.MergeAction(cms); 
             return Content(data.ToString());
