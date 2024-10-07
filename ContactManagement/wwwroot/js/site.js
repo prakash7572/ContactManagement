@@ -9,7 +9,18 @@ function LoadData() {
             if (xhr.status >= 200 && xhr.status < 300) {
                 try {
                     const responseData = JSON.parse(xhr.responseText);
-                    alert('Response: ' + responseData);
+                    let html = '', htmlFav = '';
+                    for (let i = 0; i < responseData.Data.length; i++) {
+                        html += `<i class="fa fa-edit"><span>${responseData.Data[i].FirstName}</span>
+                                 <br/>
+                                 <i class="fa fa-trash"></i><span>${responseData.Data[i].Email}</span>
+                                 <br/>`
+                    }
+                    const element = document.querySelector('.div-container'); 
+                    if (element) {
+                        element.innerHTML = html;
+                    }
+
                 } catch (e) {
                     alert('Response: ' + xhr.responseText);
                 }

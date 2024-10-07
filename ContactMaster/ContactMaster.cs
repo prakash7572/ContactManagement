@@ -21,7 +21,7 @@ namespace ContactMaster
         }
 
         public async Task<Response<CMS>> Fetch(int id = 0)
-        {
+            {
             using var conn = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("SP_ContactManagement", conn)
             {
