@@ -9,6 +9,7 @@ namespace ContactMaster
     public interface IContactMaster
     {
         Task<Response<CMS>> MergeAction(CMS cms);
+        Task<Response<CMS>> Favourite(int id, bool isFavourite);
         Task<Response<CMS>> Fetch(int id = 0);
         Task<CMS> Delete();
     }

@@ -20,6 +20,32 @@ namespace ContactMaster
             throw new NotImplementedException();
         }
 
+        public async Task<Response<CMS>> Favourite(int id, bool isFavourite)
+        {
+            try
+            {
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("SP_ContactManagement", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@IsFavourite", isFavourite);
+                cmd.Parameters.AddWithValue("@ID", id);
+                cmd.Parameters.AddWithValue("@QueryType", "Favourite");
+
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                using var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(_dataTable);
+
+                return new Response<CMS>(true, _dataTable, "", 200);
+            }
+            catch (Exception ex)
+            {
+                return new Response<CMS>(false, null, $"Error: {ex.Message}", 500);
+            }
+        }
+
         public async Task<Response<CMS>> Fetch(int id = 0)
             {
             using var conn = new SqlConnection(_connectionString);

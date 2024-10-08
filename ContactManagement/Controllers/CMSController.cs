@@ -22,6 +22,12 @@ namespace ContactManagement.Controllers
             Response<CMS> data = await _contactMaster.MergeAction(cms); 
             return Content(JsonConvert.SerializeObject(data));
         }
+        [HttpPost]
+        public async Task<IActionResult> Favourite(int id,bool isFavourite)
+        {
+            Response<CMS> data = await _contactMaster.Favourite(id, isFavourite);
+            return Content(JsonConvert.SerializeObject(data));
+        }
         [HttpGet]
         public async Task<IActionResult> Fetch(int ID=0)
         {
