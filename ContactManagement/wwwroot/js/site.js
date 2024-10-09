@@ -51,7 +51,7 @@ function IsFavourite(e) {
         let formData = {
             ID: Number(id), IsFavourite: Boolean(e.getAttribute("data-fav-val"))
         };
-        xhr.open('POST', `${url}favourite?id=${id}&isFavourite=${IsFavourite}`, true);
+        xhr.open('POST', `${url}favourite?id=${id}&isFavourite=${IsFavourite}`, true); 
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
