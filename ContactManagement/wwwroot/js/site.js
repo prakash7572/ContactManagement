@@ -1,6 +1,6 @@
-﻿var url = "/cms/";
-var xhr = new XMLHttpRequest();
-var data = [];
+﻿var url = "/cms/", xhr = new XMLHttpRequest();
+
+
 function LoadData() {
     try {
         xhr.open('GET', `${url}fetch`, true);
@@ -8,25 +8,35 @@ function LoadData() {
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
                 try {
-                    const responseData = JSON.parse(xhr.responseText);
-                    if (responseData.IsSuccess) {
-                        data = responseData.Data;
-                    }
-
+                    const data = JSON.parse(xhr.responseText).Data;
                     let html = '', htmlFav = '';
                     for (let i = 0; i < data.length; i++) {
-                        html += `<div class="p-1"><i class="fa fa-edit" style="color:#2486db"></i>&nbsp;&nbsp;<span>${data[i].FirstName}</span>
+                        if (data[i].IsFavourite) {
+                            htmlFav += `<div class="p-1">
+                                   &nbsp;&nbsp;<span>${data[i].FirstName}</span>
+                                   <br/>
+                                   &nbsp;&nbsp;<span>${data[i].Email}</span>
+                                   <span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-close" style="margin-left:111px;font-size:larger;color:red;" data-fav-val="${data[i].IsFavourite}" data-fav="${data[i].ID}" onclick=IsFavourite(this)></i></span>
+                                   <br/>
+                                   </div>`
+
+                        }
+                        html += `<div class="p-1"><i class="fa fa-edit" style="color:#2486db" onclick="GetData('${data[i].ID}')"></i>&nbsp;&nbsp;<span>${data[i].FirstName}</span>
                                  <br/>
-                                 <i class="fa fa-close" style="font-size: larger;color: red"></i>&nbsp;&nbsp;<span>${data[i].Email}</span>
-                                 <span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star-o" style="margin-left:111px;font-size:larger;color:#ff8100;" data-fav-val="${data[i].IsFavourite}" data-fav="${data[i].ID}" onclick=IsFavourite(this)></i></span>
+                                 <i class="fa fa-close" style="font-size: larger;color: red" onclick="Delete('${data[i].ID}')"></i>&nbsp;&nbsp;<span>${data[i].Email}</span>
+                                 <span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa ${data[i].IsFavourite == true ? `fa-star` : `fa-star-o`}" style="margin-left:111px;font-size:larger;color:#ff8100;" data-fav-val="${data[i].IsFavourite}" data-fav="${data[i].ID}" onclick=IsFavourite(this)></i></span>
                                  <br/>
-                                 </div>`
+                                 </div>`;
+
                     }
                     const element = document.querySelector('.div-container');
                     if (element) {
                         element.innerHTML = html;
                     }
-
+                    const e = document.querySelector('.left-container');
+                    if (e) {
+                        e.innerHTML = htmlFav;
+                    }
 
                 } catch (e) {
                     alert('Response: ' + xhr.responseText);
@@ -44,18 +54,55 @@ function LoadData() {
     }
 
 }
+function GetData(id) {
+    const elements = document.getElementsByClassName('span-content');
+    
+    xhr.open('GET', `${url}Fetch?id=${id}`, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            const response = JSON.parse(xhr.responseText);
+            const data = response.Data; 
+            if (data) {
+                var inputs = document.querySelectorAll('form input[type="text"]');
+                inputs.forEach(function (input) {
+                    if (data[0][input.name] !== undefined) {
+                        input.value = data[0][input.name];
+                    }
+                });
+                 document.getElementsByName("ID").value = data[0].ID
+                if (elements.length > 0) {
+                    elements[0].click();
+                }
+               
+            }
+        } else {
+            alert('Request failed with status: ' + xhr.status);
+        }
+    };
 
+    xhr.onerror = function () {
+        alert('Request error');
+    };
+    xhr.send();
+}
+
+if (window.location.pathname == "/cms/cms") {
+    LoadData();
+}
 function IsFavourite(e) {
     try {
+        let IsFavourite = e.getAttribute("data-fav-val") == "true" ? false : true;
         let id = e.getAttribute("data-fav");
-        let formData = {
-            ID: Number(id), IsFavourite: Boolean(e.getAttribute("data-fav-val"))
-        };
-        xhr.open('POST', `${url}favourite?id=${id}&isFavourite=${IsFavourite}`, true); 
+        e.setAttribute("class", "fa fa-star");
+        xhr.open('POST', `${url}favourite?id=${id}&isFavourite=${IsFavourite}`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
-                alert('Response:', xhr.responseText);
+                const responseData = JSON.parse(xhr.responseText);
+                if (responseData.IsSuccess) {
+                    LoadData();
+                }
             } else {
                 alert('Request failed with status:', xhr.status);
             }
@@ -65,28 +112,37 @@ function IsFavourite(e) {
         };
         xhr.send();
 
-        const filteredData = data.filter(x => x.ID == id);
-
-        let html = `<div class="p-1">
-                                 &nbsp;&nbsp;<span>${filteredData[0].FirstName}</span>
-                                 <br/>
-                                 &nbsp;&nbsp;<span>${filteredData[0].Email}</span>
-                                 <span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-close" style="margin-left:111px;font-size:larger;color:#ff8100;"></i></span>
-                                 <br/>
-                                 </div>`
-
-        const element = document.querySelector('.left-container');
-        if (element) {
-            element.innerHTML += html;
-        }
-        e.getAttribute("class") == "fa fa-star" ? e.setAttribute("class", "fa fa-star-o") : e.setAttribute("class", "fa fa-star");
     } catch (e) {
         console.log(e);
     }
 
 }
 
-LoadData();
+function Delete(id) {
+    try {
+
+        xhr.open('GET', `${url}Delete?id=${id}`);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const responseData = JSON.parse(xhr.responseText);
+                if (responseData.IsSuccess) {
+                    LoadData();
+                }
+            } else {
+                alert('Request failed with status:', xhr.status);
+            }
+        };
+        xhr.onerror = function () {
+            alert('Request error');
+        };
+        xhr.send();
+
+    } catch (e) {
+        console.log(e);
+    }
+
+}
 
 function SaveData() {
 
@@ -100,9 +156,10 @@ function SaveData() {
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
-                alert('Response:', xhr.responseText);
+                const data = JSON.parse(xhr.responseText)
+                alert(data.Data[0].MESSAGE);
             } else {
-                alert('Request failed with status:', xhr.status);
+                alert(xhr.status);
             }
         };
         xhr.onerror = function () {

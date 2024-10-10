@@ -15,9 +15,30 @@ namespace ContactMaster
             this._dataTable = dataTable;
         }
 
-        public Task<CMS> Delete()
+        public async Task<Response<CMS>> Delete(int id=0)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("SP_ContactManagement", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@ID", id);
+                cmd.Parameters.AddWithValue("@QueryType", "DELETE");
+
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+                using var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(_dataTable);
+
+                return new Response<CMS>(true, _dataTable);
+            }
+            catch (Exception ex)
+            {
+                return new Response<CMS>(false, null, $"Error: {ex.Message}", 500);
+            }
+            
         }
 
         public async Task<Response<CMS>> Favourite(int id, bool isFavourite)
@@ -38,7 +59,7 @@ namespace ContactMaster
                 using var adapter = new SqlDataAdapter(cmd);
                 adapter.Fill(_dataTable);
 
-                return new Response<CMS>(true, _dataTable, "", 200);
+                return new Response<CMS>(true,_dataTable);
             }
             catch (Exception ex)
             {
@@ -47,7 +68,7 @@ namespace ContactMaster
         }
 
         public async Task<Response<CMS>> Fetch(int id = 0)
-            {
+        {
             using var conn = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("SP_ContactManagement", conn)
             {
@@ -61,7 +82,7 @@ namespace ContactMaster
 
             if (_dataTable.Rows.Count > 0)
             {
-                return new Response<CMS>(true, _dataTable, "Data Fetch Successfully !!", 200);
+                return new Response<CMS>(true,_dataTable);
             }
             return new Response<CMS>(false, null, "No data found!", 404);
         }
@@ -91,7 +112,7 @@ namespace ContactMaster
                 using var adapter = new SqlDataAdapter(cmd);
                 adapter.Fill(_dataTable);
 
-                return new Response<CMS>(true, _dataTable,"", 200);
+                return new Response<CMS>(true,_dataTable);
             }
             catch (Exception ex)
             {

@@ -16,6 +16,13 @@ namespace ContactManagement.Controllers
         public IActionResult DashBoard() => View();
         public IActionResult CMS() => View();
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            Response<CMS> data = await _contactMaster.Delete(id);
+            return Content(JsonConvert.SerializeObject(data));
+        }
+
         [HttpPost]
         public async Task<IActionResult> CmsContact([FromBody] CMS cms) 
         {

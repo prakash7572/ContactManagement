@@ -21,6 +21,17 @@ namespace ContactMaster
             Message = message;
             StatusCode = statusCode;
         }
+
+        public Response(bool isSuccess, DataTable? data = null) 
+        {
+            IsSuccess = isSuccess;
+            Data = data;
+        }
+
+        public Response(DataTable? data = null)
+        {
+            Data = data;
+        }
     }
 
 

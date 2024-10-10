@@ -10,11 +10,12 @@ Password VARCHAR(100),
 ConfirmPassword VARCHAR(100),
 Email VARCHAR(100),
 Address VARCHAR(MAX),
+Phone   VARCHAR(12),
 IsFavourite BIT
 )
 
 
-CREATE PROCEDURE SP_ContactManagement(
+ALTER PROCEDURE SP_ContactManagement(
 @ID			      INT=0,
 @FirstName        VARCHAR(100)=NULL,
 @LastName         VARCHAR(100)=NULL,
@@ -29,7 +30,7 @@ CREATE PROCEDURE SP_ContactManagement(
 AS
 BEGIN
 		DECLARE @STATUS  VARCHAR(10);
-		DECLARE @MESSAGE VARCHAR(10);
+		DECLARE @MESSAGE VARCHAR(100);
 
 		IF(@QueryType='INSERT')
 		BEGIN
@@ -50,12 +51,12 @@ BEGIN
 		END
 		ELSE IF(@QueryType='FETCH_ONE')
 		BEGIN
-		     SELECT  ID,FirstName,LastName,UserName,Password,ConfirmPassword,Email,Address,IsFavourite
+		     SELECT  ID,FirstName,LastName,UserName,Phone,Password,ConfirmPassword,Email,Address,IsFavourite
 			 FROM Contacts WHERE ID=@ID
 		END
 		ELSE IF(@QueryType='FETCH_ALL')
 		BEGIN
-			  SELECT  ID,FirstName,LastName,UserName,Password,ConfirmPassword,Email,Address,IsFavourite 
+			  SELECT  ID,FirstName,LastName,UserName,Phone,Password,ConfirmPassword,Email,Address,IsFavourite 
 			  FROM Contacts 
 		END
 		ELSE IF(@QueryType='DELETE')
