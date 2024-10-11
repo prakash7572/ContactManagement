@@ -1,5 +1,10 @@
 ﻿var url = "/cms/", xhr = new XMLHttpRequest();
-
+const elements = document.getElementsByClassName('span-content');
+if (elements.length > 0) {
+    elements[0].addEventListener('click', function () {
+        document.querySelectorAll('input').forEach(input => input.value = '');
+    });
+}
 
 function LoadData() {
     try {
@@ -56,7 +61,9 @@ function LoadData() {
 }
 function GetData(id) {
     const elements = document.getElementsByClassName('span-content');
-    
+    if (elements.length > 0) {
+        elements[0].click();
+    }
     xhr.open('GET', `${url}Fetch?id=${id}`, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function () {
@@ -64,16 +71,14 @@ function GetData(id) {
             const response = JSON.parse(xhr.responseText);
             const data = response.Data; 
             if (data) {
-                var inputs = document.querySelectorAll('form input[type="text"]');
+                var inputs = document.querySelectorAll('form input[type="text"], form input[type="hidden"]');
                 inputs.forEach(function (input) {
                     if (data[0][input.name] !== undefined) {
                         input.value = data[0][input.name];
                     }
                 });
-                 document.getElementsByName("ID").value = data[0].ID
-                if (elements.length > 0) {
-                    elements[0].click();
-                }
+                var inputID = document.getElementsByName('ID');
+                inputID.value = data[0].ID;
                
             }
         } else {
@@ -148,6 +153,7 @@ function SaveData() {
 
     try {
         var inputs = document.querySelectorAll('form input[type="text"]'), formData1 = {};
+        formData1.ID = document.getElementsByName("ID").value;
         inputs.forEach(function (input) {
             formData1[input.name] = input.value;
         });
@@ -157,7 +163,12 @@ function SaveData() {
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
                 const data = JSON.parse(xhr.responseText)
-                alert(data.Data[0].MESSAGE);
+                if (data.IsSuccess) {
+                    alert(data.Data[0].MESSAGE);
+                    document.querySelector('[data-dismiss="modal"]').click();
+                    LoadData();
+                }
+             
             } else {
                 alert(xhr.status);
             }
